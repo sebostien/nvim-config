@@ -1,0 +1,9 @@
+---@class Setup
+---@field project_dirs string[]
+
+---@type Setup
+local M = {
+  project_dirs = { "~/dev/" },
+}
+
+return M
