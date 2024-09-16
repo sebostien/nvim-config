@@ -31,7 +31,7 @@ local KIND_MAP = {
 
 return {
   "hrsh7th/nvim-cmp",
-  event = "VeryLazy",
+  event = { "BufNewFile", "BufReadPre" },
   dependencies = {
     -- CMP Sources
     { "hrsh7th/cmp-nvim-lsp-signature-help" },

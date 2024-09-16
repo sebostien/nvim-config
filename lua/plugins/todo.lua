@@ -2,7 +2,7 @@ return {
   {
     "folke/todo-comments.nvim",
     dependencies = { "nvim-lua/plenary.nvim" },
-    lazy = false,
+    version = "v1.4.0",
     keys = {
       { "<localleader>tf", "<CMD>TodoTelescope<CR>", desc = "TODO Telescope" },
       { "<localleader>tt", "<CMD>TodoTrouble<CR>", desc = "TODO Trouble" },

@@ -7,7 +7,7 @@ return {
   {
     "lewis6991/gitsigns.nvim",
     version = "v0.9.0",
-    lazy = false,
+    event = "VeryLazy",
     keys = {
       { "<localleader>gt", "<CMD>Gitsigns diffthis<CR>", desc = "Git toggle diff" },
       { "<localleader>gd", "<CMD>Gitsigns toggle_deleted<CR>", desc = "Git toggle inline deleted" },
@@ -21,6 +21,7 @@ return {
   },
   {
     "tpope/vim-fugitive",
+    cmd = "Git",
     keys = {
       { "<localleader>gs", "<CMD>Git<CR>", desc = "Fugitive git status" },
     },

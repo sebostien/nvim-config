@@ -32,11 +32,7 @@ require("lazy").setup({
     { import = "plugins" },
     { import = "plugins/lsp" },
   },
-  rocks = {
-    -- TODO: DISABLE
-    root = vim.fn.stdpath("data") .. "/lazy-rocks",
-    server = "https://nvim-neorocks.github.io/rocks-binaries/",
-  },
+  rocks = { enabled = false },
   install = { colorscheme = { "habamax" } },
   ui = {
     border = "rounded",

@@ -1,15 +1,24 @@
+local indent_guide_ft_disable = {
+  "help",
+  "neo-tree",
+  "Trouble",
+  "lazy",
+  "mason",
+  "notify",
+}
+
 ---- Other ----
 return {
-  {
-    "nvim-lua/plenary.nvim",
-    priority = 9999,
-  },
-
   -- Make stuff prettier
-  "stevearc/dressing.nvim",
+  {
+    "stevearc/dressing.nvim",
+    version = "v2.2.2",
+    opts = {},
+  },
   {
     "rcarriga/nvim-notify",
     priority = 9997,
+    version = "v3.13.5",
     config = function()
       local notify = require("notify")
       vim.notify = notify
@@ -23,29 +32,22 @@ return {
     end,
   },
 
-  -- Indent guides for Neovim
+  -- Indent guides
   {
     "lukas-reineke/indent-blankline.nvim",
     event = { "VeryLazy" },
+    main = "ibl",
     opts = {
       indent = { char = "│" },
       scope = { enabled = false },
       exclude = {
-        filetypes = {
-          "help",
-          "neo-tree",
-          "Trouble",
-          "lazy",
-          "mason",
-          "notify",
-        },
+        filetypes = indent_guide_ft_disable,
       },
     },
-    main = "ibl",
   },
-
   {
     "echasnovski/mini.indentscope",
+    version = "v0.13.0",
     event = { "VeryLazy" },
     config = function()
       local mini = require("mini.indentscope")
@@ -54,19 +56,12 @@ return {
         symbol = "│",
         options = { try_as_border = true },
         draw = {
-          animation = mini.gen_animation.quadratic({ easing = "out", duration = 10 }),
+          animation = mini.gen_animation.none(),
         },
       })
 
       vim.api.nvim_create_autocmd("FileType", {
-        pattern = {
-          "help",
-          "neo-tree",
-          "Trouble",
-          "lazy",
-          "mason",
-          "notify",
-        },
+        pattern = indent_guide_ft_disable,
         callback = function()
           ---@diagnostic disable-next-line
           vim.b.miniindentscope_disable = true
@@ -86,6 +81,7 @@ return {
   -- Autopairs
   {
     "windwp/nvim-autopairs",
+    commit = "ffc139f",
     event = "VeryLazy",
     opts = {
       check_ts = true,
@@ -95,8 +91,8 @@ return {
   -- Shortcuts for surrounding
   {
     "echasnovski/mini.surround",
+    version = "v0.13.0",
     event = "VeryLazy",
-    version = "*",
     opts = {},
   },
 }

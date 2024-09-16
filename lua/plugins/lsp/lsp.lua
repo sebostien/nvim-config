@@ -30,10 +30,10 @@ return {
       { "williamboman/mason-lspconfig.nvim" },
       { "WhoIsSethDaniel/mason-tool-installer.nvim" },
       -- Conifg in lua.lua
-      "folke/lazydev.nvim",
-      "folke/neoconf.nvim",
+      { "folke/lazydev.nvim", optional = true },
+      { "folke/neoconf.nvim", optional = true },
       -- Config in rust.lua
-      "mrcjkb/rustaceanvim",
+      { "mrcjkb/rustaceanvim", optional = true },
     },
     ---@class PluginLspOpts
     opts = {
