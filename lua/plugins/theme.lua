@@ -50,7 +50,6 @@ local Colors = {
   fg4 = "#838589",
 }
 
-
 ---@param colors Colors
 local custom_highlights = function(colors)
   return {

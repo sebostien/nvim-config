@@ -7,10 +7,8 @@ return {
     "nvim-telescope/telescope.nvim",
     event = "VimEnter",
     dependencies = {
-      "folke/trouble.nvim",
-      "Myzel394/jsonfly.nvim",
-      "nvim-lua/plenary.nvim",
-      "Marskey/telescope-sg",
+      { "folke/trouble.nvim" },
+      { "nvim-lua/plenary.nvim", version = "" },
       {
         "nvim-telescope/telescope-fzf-native.nvim",
         build = "make",
@@ -30,15 +28,11 @@ return {
       { "<localleader>fn", "<CMD>Telescope notify<CR>", desc = "Search notifications" },
       { "<localleader>fd", "<CMD>Telescope diagnostics<CR>", desc = "Search diagnostics" },
       { "<localleader>fo", "<CMD>Telescope oldfiles<CR>", desc = "Search recent files" },
-      { "<localleader>fa", "<CMD>Telescope ast_grep<CR>", desc = "Ast Grep" },
 
       -- Help stuff
       { "<localleader>hh", "<CMD>Telescope help_tags<CR>", desc = "NeoVim help pages" },
       { "<localleader>hm", "<CMD>Telescope man_pages<CR>", desc = "man pages" },
       { "<localleader>hk", "<CMD>Telescope keymaps<CR>", desc = "Keymaps" },
-
-      -- JSONFly
-      { "<localleader>fj", "<CMD>Telescope jsonfly<CR>", desc = "Open json(fly)" },
     },
     opts = {
       defaults = {
@@ -54,25 +48,6 @@ return {
             ["<c-enter>"] = "to_fuzzy_refine",
           },
           n = {},
-        },
-      },
-      extensions = {
-        jsonfly = {
-          layout_strategy = "horizontal",
-          prompt_position = "top",
-          layout_config = {
-            mirror = false,
-            prompt_position = "top",
-            preview_width = 0.45,
-          },
-        },
-        ast_grep = {
-          command = {
-            "sg",
-            "--json=stream",
-          },
-          grep_open_files = false,
-          lang = nil,
         },
       },
     },

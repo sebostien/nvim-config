@@ -1,3 +1,34 @@
+local MAX_WIDTH = 50 -- Max width of completion pop-up
+
+-- FROM: https://github.com/onsails/lspkind.nvim
+local KIND_MAP = {
+  Text = "󰉿",
+  Method = "󰆧",
+  Function = "󰊕",
+  Constructor = "",
+  Field = "󰜢",
+  Variable = "󰀫",
+  Class = "󰠱",
+  Interface = "",
+  Module = "",
+  Property = "󰜢",
+  Unit = "󰑭",
+  Value = "󰎠",
+  Enum = "",
+  Keyword = "󰌋",
+  Snippet = "",
+  Color = "󰏘",
+  File = "󰈙",
+  Reference = "󰈇",
+  Folder = "󰉋",
+  EnumMember = "",
+  Constant = "󰏿",
+  Struct = "󰙅",
+  Event = "",
+  Operator = "󰆕",
+  TypeParameter = "",
+}
+
 return {
   "hrsh7th/nvim-cmp",
   event = "VeryLazy",
@@ -8,30 +39,26 @@ return {
     { "hrsh7th/cmp-nvim-lsp" },
     { "hrsh7th/cmp-path" },
     { "hrsh7th/cmp-calc" },
-    -- Formatting
-    { "onsails/lspkind.nvim" },
   },
   config = function()
     local cmp = require("cmp")
     local types = require("cmp.types")
-    local lspkind = require("lspkind")
-
-    WIDE_HEIGHT = 80
 
     cmp.setup({
       completion = { completeopt = "menu,menuone,noinsert" },
       mapping = cmp.mapping.preset.insert({
         -- Select
-        ["<C-n>"] = cmp.mapping.select_next_item,
-        ["<C-p>"] = cmp.mapping.select_prev_item,
+        ["<C-n>"] = cmp.mapping.select_next_item(),
+        ["<C-p>"] = cmp.mapping.select_prev_item(),
+
         -- Scroll docs
         ["<C-b>"] = cmp.mapping.scroll_docs(-4),
         ["<C-f>"] = cmp.mapping.scroll_docs(4),
 
         -- Other
         ["<C-e>"] = cmp.mapping.abort(),
-        ["<C-Space>"] = cmp.mapping.complete(),
-        ["<CR>"] = cmp.mapping.confirm({ select = false }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+        ["<CR>"] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+        ["<C-s>"] = cmp.mapping.complete(),
       }),
       -----
       sources = {
@@ -42,22 +69,38 @@ return {
         { name = "buffer" },
       },
       confirmation = {
-        -- TODO: This
-        default_behavior = types.cmp.ConfirmBehavior.Replace,
+        default_behavior = types.cmp.ConfirmBehavior.Insert, -- Insert completion before any text after
+        get_commit_characters = function(commit_characters)
+          return commit_characters
+        end,
       },
       window = {
-        -- TODO: This
-        documentation = {
-          maxwidth = math.floor(WIDE_HEIGHT * (vim.o.columns / 100)),
-          maxheight = math.floor(WIDE_HEIGHT * (vim.o.lines / 100)),
-        },
+        documentation = cmp.config.window.bordered(),
+        completion = cmp.config.window.bordered(),
       },
       formatting = {
-        -- TODO: This
-        format = lspkind.cmp_format({
-          with_text = true,
-          maxwidth = 50,
-        }),
+        expandable_indicator = true,
+        fields = { "kind", "abbr", "menu" },
+        format = function(_, vim_item)
+          local symbol = KIND_MAP[vim_item.kind] or ""
+          vim_item.kind = string.format("%s", symbol)
+
+          if vim.fn.strchars(vim_item.abbr) > MAX_WIDTH then
+            vim_item.abbr = vim.fn.strcharpart(vim_item.abbr, 0, MAX_WIDTH) .. "..."
+          end
+          return vim_item
+        end,
+      },
+    })
+
+    -- `/` cmdline setup.
+    cmp.setup.cmdline("/", {
+      mapping = cmp.mapping.preset.cmdline(),
+      view = {
+        entries = { name = "wildmenu", separator = " " },
+      },
+      sources = {
+        { name = "buffer" },
       },
     })
   end,

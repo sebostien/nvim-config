@@ -22,11 +22,6 @@ keymap("n", "<Esc>", "<CMD>nohlsearch<CR>")
 -- Lazy
 keymap("n", "<localleader>ll", "<CMD>Lazy<CR>")
 
--- Open pdf
-keymap("n", "<localleader>op", function()
-  util.telescope_files({ "%.pdf" }, "zathura")
-end, { desc = "Open file in zathura" })
-
 -- Move lines
 keymap("i", "<A-j>", "<Esc>:m .+1<CR>==gi", { desc = "Move line down" })
 keymap("i", "<A-k>", "<Esc>:m .-2<CR>==gi", { desc = "Move line up" })

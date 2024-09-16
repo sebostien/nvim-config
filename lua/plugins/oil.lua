@@ -2,17 +2,14 @@ return {
   {
     "refractalize/oil-git-status.nvim",
     event = "VeryLazy",
-    dependencies = {
-      "stevearc/oil.nvim",
-    },
+    dependencies = { "stevearc/oil.nvim" },
     opts = { show_ignored = true },
   },
   {
     "stevearc/oil.nvim",
+    version = "v2.12.2",
     event = { "VeryLazy" },
-    dependencies = {
-      "nvim-tree/nvim-web-devicons",
-    },
+    dependencies = { "nvim-tree/nvim-web-devicons" },
     opts = {
       win_options = {
         signcolumn = "yes:2",

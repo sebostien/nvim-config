@@ -1,7 +1,7 @@
 return {
   {
     "smoka7/hop.nvim",
-    version = "*",
+    version = "v2.7.1",
     keys = {
       { "gs", "<CMD>HopWord<CR>", desc = "Hop to word in buf" },
       { "<localleader>p", "<CMD>HopPasteChar1<CR>", desc = "Put with Hop" },
