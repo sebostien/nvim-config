@@ -18,7 +18,7 @@ o.undofile = true -- Sets undo to file
 
 o.scrolloff = 8
 o.signcolumn = "yes"
-o.timeoutlen = 500 -- Trigger which-key
+o.timeoutlen = 400 -- Cancel current key-combo
 o.splitbelow = false
 o.splitright = true
 o.updatetime = 1000
@@ -53,6 +53,14 @@ vim.g.loaded_netrwPlugin = 1
 vim.cmd([[ nnoremap \ :Oil <cr> ]])
 
 -- Windows to close with "q"
-vim.cmd([[ autocmd FileType vim,help,qf,lspinfo nnoremap <buffer><silent> q :close<CR> ]])
+vim.cmd([[ autocmd FileType vim,help,qf,lspinfo,gitsigns-blame nnoremap <buffer><silent> q :close<CR> ]])
 vim.cmd([[ autocmd FileType man nnoremap <buffer><silent> q :quit<CR> ]])
 
+-- Highlight when yanking text
+vim.api.nvim_create_autocmd("TextYankPost", {
+  desc = "Highlight when yanking text",
+  group = vim.api.nvim_create_augroup("sn-highlight-on-yank", { clear = true }),
+  callback = function()
+    vim.highlight.on_yank({ timeout = 200 })
+  end,
+})

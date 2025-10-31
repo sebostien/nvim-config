@@ -1,14 +1,11 @@
 local util = require("extra.util")
+local tele_util = require("extra.telescope_plugins")
 local keymap = vim.keymap.set
+
+local M = {}
 
 vim.g.mapleader = " " -- Commands involving current buffer
 vim.g.maplocalleader = "," -- Commands beyond buffer
-
--- Use CTRL+<hjkl> to switch between windows
-keymap("n", "<C-h>", "<C-w><C-h>", { desc = "Move focus to the left window" })
-keymap("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to the right window" })
-keymap("n", "<C-j>", "<C-w><C-j>", { desc = "Move focus to the lower window" })
-keymap("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to the upper window" })
 
 -- Resize windows
 keymap("n", "<C-Up>", "<CMD>resize -5<CR>")
@@ -36,6 +33,9 @@ keymap(
   { desc = "Substitue word under cursor" }
 )
 
+-- Open file under "cursor"
+keymap("n", "gx", util.smart_open, { desc = "Open file under cursor" })
+
 -- Stay in visual mode when indenting
 keymap("v", "<", "<gv")
 keymap("v", ">", ">gv")
@@ -43,27 +43,26 @@ keymap("v", ">", ">gv")
 -- Preview image
 keymap("n", "<localleader>i", util.preview_image, { desc = "Preview image under cursor or buffer" })
 
---------------------
--- [[ Yank/Put ]] --
+-- Render markdown
+keymap("n", "<localleader>mr", function()
+  require("extra.render_markdown")()
+end, { desc = "Render markdown of file" })
+
+-- Telescope
+keymap("n", "<localleader>fp", tele_util.common_dirs, { desc = "Telescope: Files in common dirs" })
+keymap("n", "<localleader>fj", tele_util.jq, { desc = "Telescope: jq" })
+
+-------------------------
+--- Yank/Put ------------
 
 -- Yank/put system clipboard
-keymap("v", "<leader>y", '"+y')
-keymap("n", "<leader>y", '"+y')
-keymap("n", "<leader>Y", '"+Y') -- Yank to end of line
-keymap("n", "<leader>p", '"+p')
-
--- Highlight when yanking text
-vim.api.nvim_create_autocmd("TextYankPost", {
-  desc = "Highlight when yanking text",
-  group = vim.api.nvim_create_augroup("sn-highlight-on-yank", { clear = true }),
-  callback = function()
-    vim.highlight.on_yank({ timeout = 200 })
-  end,
-})
+keymap("v", "<leader>y", "\"+y", { desc = "Yank to clipboard" })
+keymap("n", "<leader>y", "\"+y", { desc = "Yank to clipboard" })
+keymap("n", "<leader>p", "\"+p", { desc = "Put from clipboard" })
 
 -- Delete to void
-keymap("n", "<leader>d", '"_d')
-keymap("v", "<leader>d", '"_d')
+keymap("n", "<leader>d", "\"_d")
+keymap("v", "<leader>d", "\"_d")
 
 -- Keep cursor in middle when paging
 keymap("n", "<C-d>", "<C-d>zz")
@@ -75,82 +74,84 @@ keymap("n", "N", "Nzz")
 
 keymap("n", "Q", "<nop>")
 
--- Disable arrow keys in normal mode
-keymap("n", "<left>", '<cmd>echo "DON\'T!"<CR>')
-keymap("n", "<right>", '<cmd>echo "DON\'T!"<CR>')
-keymap("n", "<up>", '<cmd>echo "DON\'T!"<CR>')
-keymap("n", "<down>", '<cmd>echo "DON\'T!"<CR>')
-
----------------
--- [[ LSP ]] --
----------------
+-------------------------
+--- LSP -----------------
 
 keymap("n", "<localleader>lm", "<CMD>Mason<CR>", { desc = "Mason" })
 keymap("n", "<localleader>lr", "<CMD>LspRestart<CR><CMD>e<CR>", { desc = "Restart lsp servers" })
-keymap(
-  "n",
-  "<localleader>ls",
-  "<CMD>LspStop<CR><CMD>lua vim.diagnostic.reset()<CR>",
-  { desc = "Stop lsp servers" }
-)
-keymap("n", "<localleader>li", "<CMD>LspInfo<CR>", { desc = "LspInfo" })
-keymap("n", "<leader>ls", "<CMD>LspStart harper_ls ltex<CR>", { desc = "Start LSP spellcheckers" })
+keymap("n", "<localleader>ls", "<CMD>LspStop<CR><CMD>lua vim.diagnostic.reset()<CR>", { desc = "Stop lsp servers" })
+keymap("n", "<leader>ls", function()
+  vim.lsp.enable("harper_ls")
+end, { desc = "Start LSP spellcheckers" })
 
-vim.api.nvim_create_autocmd("LspAttach", {
-  group = vim.api.nvim_create_augroup("sn-lsp-attach-keymap", { clear = true }),
-  desc = "Setup LSP keymaps",
-  ---@param event { buf: number, data: { client_id: number }}
-  callback = function(event)
-    ---@param keys string
-    ---@param func string|fun()
-    ---@param desc string
-    local map = function(keys, func, desc)
-      vim.keymap.set("n", keys, func, { buffer = event.buf, desc = "LSP: " .. desc })
-    end
+---@param event { buf: number, data: { client_id: number }}
+M.set_lsp_buffer_keymaps = function(event)
+  ---@param keys string
+  ---@param func string|fun()
+  ---@param desc string
+  local map = function(keys, func, desc)
+    vim.keymap.set("n", keys, func, { buffer = event.buf, desc = "LSP: " .. desc })
+  end
 
-    local bufnr = event.buf
-    local client = vim.lsp.get_client_by_id(event.data.client_id)
+  local bufnr = event.buf
+  local client = vim.lsp.get_client_by_id(event.data.client_id)
 
-    local tele = require("telescope.builtin")
+  local tele = require("telescope.builtin")
 
-    map("<space>e", vim.diagnostic.open_float, "Open diagnostics float")
-    map("[d", vim.diagnostic.goto_prev, "Go to prev diagnostics")
-    map("]d", vim.diagnostic.goto_next, "Go to next diagnostics")
+  map("<space>e", vim.diagnostic.open_float, "Open diagnostics float")
+  map("[d", vim.diagnostic.goto_prev, "Go to prev diagnostics")
+  map("]d", vim.diagnostic.goto_next, "Go to next diagnostics") -- TODO: Deprecated
 
-    -- Gotos
-    -- See `:help vim.lsp.*`
-    map("gr", tele.lsp_references, "Goto References")
-    map("gd", tele.lsp_definitions, "Goto Definition")
-    map("gD", vim.lsp.buf.declaration, "Go to declaration")
-    map("gi", tele.lsp_implementations, "Goto Implementation")
-    map("gt", tele.lsp_type_definitions, "Goto type definition")
-    map("<leader>sd", tele.lsp_document_symbols, "Document Symbols")
-    map("<leader>sw", tele.lsp_dynamic_workspace_symbols, "Workspace Symbols")
+  -- Gotos
+  -- See `:help vim.lsp.*`
+  map("gr", tele.lsp_references, "Goto References")
+  map("gd", tele.lsp_definitions, "Goto Definition")
+  map("gD", vim.lsp.buf.declaration, "Go to declaration")
+  map("gi", tele.lsp_implementations, "Goto Implementation")
+  map("gt", tele.lsp_type_definitions, "Goto type definition")
+  map("<leader>sd", tele.lsp_document_symbols, "Document Symbols")
+  map("<leader>sw", tele.lsp_dynamic_workspace_symbols, "Workspace Symbols")
 
-    -- Other
-    -- Also at hovercraft plugin
-    map("<leader>k", vim.lsp.buf.hover, "Hover documentation")
-    map("<leader>K", vim.lsp.buf.signature_help, "Signature help")
-    map("<leader>rn", vim.lsp.buf.rename, "Rename symbol")
-
-    map("<leader>ca", vim.lsp.buf.code_action, "Code actions")
-    map("<leader>cl", vim.lsp.codelens.run, "Codelens")
-
-    -- Cursor highlight
-    map("<leader>h", vim.lsp.buf.document_highlight, "Highlight symbol")
-    vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
-      buffer = event.buf,
-      callback = vim.lsp.buf.clear_references,
+  -- Hover
+  local hover = vim.lsp.buf.hover
+  ---@diagnostic disable-next-line: duplicate-set-field
+  vim.lsp.buf.hover = function()
+    return hover({
+      border = "rounded",
+      max_width = math.floor(vim.o.columns * 0.7),
+      max_height = math.floor(vim.o.lines * 0.7),
     })
+  end
+  map("K", vim.lsp.buf.hover, "Hover")
 
-    -- Inlay hints
-    if client ~= nil and client.server_capabilities.inlayHintProvider then
-      map("<leader>i", function()
-        vim.lsp.inlay_hint.enable(
-          not vim.lsp.inlay_hint.is_enabled({ bufnr = bufnr }),
-          { bufnr = bufnr }
-        )
-      end, "Toggle inlay hints")
-    end
-  end,
-})
+  local signature = vim.lsp.buf.signature_help
+  map("<leader>k", function()
+    return signature({
+      border = "rounded",
+      max_width = math.floor(vim.o.columns * 0.7),
+      max_height = math.floor(vim.o.lines * 0.7),
+    })
+  end, "Signature help")
+  map("<leader>rn", vim.lsp.buf.rename, "Rename symbol")
+
+  -- Other
+  map("<leader>ca", vim.lsp.buf.code_action, "Code actions")
+  map("<leader>cl", vim.lsp.codelens.run, "Codelens")
+  map("<leader>cL", vim.lsp.codelens.refresh, "Refresh Codelens")
+
+  -- Cursor highlight
+  map("<leader>h", vim.lsp.buf.document_highlight, "Highlight symbol")
+  vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
+    buffer = event.buf,
+    callback = vim.lsp.buf.clear_references,
+  })
+
+  -- Inlay hints
+  if client ~= nil and client.server_capabilities.inlayHintProvider then
+    map("<leader>i", function()
+      vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = bufnr }), { bufnr = bufnr })
+    end, "Toggle inlay hints")
+  end
+end
+
+return M

@@ -2,15 +2,18 @@
 --     Show Help:
 --     - Insert mode: <c-/>
 --     - Normal mode: ?
+
 return {
   {
     "nvim-telescope/telescope.nvim",
     cmd = "Telescope",
+    tag = "v0.1.9",
     dependencies = {
-      { "folke/trouble.nvim" },
-      { "nvim-lua/plenary.nvim", version = "" },
+      { "folke/trouble.nvim", optional = true },
+      { "nvim-lua/plenary.nvim" },
       {
         "nvim-telescope/telescope-fzf-native.nvim",
+        commit = "6fea601bd2b694c6f2ae08a6c6fab14930c60e2c",
         build = "make",
         cond = function()
           return vim.fn.executable("make") == 1
@@ -45,7 +48,8 @@ return {
         },
         mappings = {
           i = {
-            ["<c-enter>"] = "to_fuzzy_refine",
+            -- NOTE: Broken! Switch to something else
+            ["<C-Enter>"] = "to_fuzzy_refine",
           },
           n = {},
         },
@@ -53,14 +57,18 @@ return {
     },
     config = function(_, opts)
       local telescope = require("telescope")
-      local trouble = require("trouble.sources.telescope")
-      opts.defaults.mappings.i["<c-t>"] = trouble.open
-      opts.defaults.mappings.n["<c-t>"] = trouble.open
+
+      local ok, trouble = pcall(require, "trouble.sources.telescope")
+      if ok then
+        opts.defaults.mappings.i["<c-t>"] = trouble.open
+        opts.defaults.mappings.n["<c-t>"] = trouble.open
+      end
 
       telescope.setup(opts)
 
       -- Enable Telescope extensions if they are installed
       pcall(telescope.load_extension, "fzf")
+      pcall(telescope.load_extension, "fidget")
     end,
   },
 }

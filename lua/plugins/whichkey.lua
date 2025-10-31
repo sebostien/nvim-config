@@ -1,14 +1,18 @@
 return {
   {
     "folke/which-key.nvim",
+    tag = "v3.17.0",
     event = "VeryLazy",
+    ---@class wk.Opts
     opts = {
+      delay = 1000,
+      icons = { mappings = false },
       plugins = {
         marks = true,
         registers = true,
       },
       win = {
-        border = "single",
+        border = "rounded",
       },
     },
     config = function(_, opts)
@@ -26,8 +30,6 @@ return {
         { "<leader>s_",      hidden = true },
         { "<leader>t",       group = "Buffer toggles" },
         { "<leader>t_",      hidden = true },
-        { "<localleader>c",  group = "Change" },
-        { "<localleader>c_", hidden = true },
         { "<localleader>d",  group = "DAP" },
         { "<localleader>d_", hidden = true },
         { "<localleader>f",  group = "Find stuff" },
@@ -36,7 +38,7 @@ return {
         { "<localleader>g_", hidden = true },
         { "<localleader>h",  group = "Help pages" },
         { "<localleader>h_", hidden = true },
-        { "<localleader>l",  group = "Lazy" },
+        { "<localleader>l",  group = "Plugin TUI" },
         { "<localleader>l_", hidden = true },
         { "<localleader>o",  group = "Open with program" },
         { "<localleader>o_", hidden = true },

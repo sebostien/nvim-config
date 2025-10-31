@@ -1,35 +1,11 @@
 return {
   "nvim-treesitter/nvim-treesitter",
+  tag = "v0.10.0",
   build = ":TSUpdate",
+  lazy = false,
   opts = {
     -- https://github.com/nvim-treesitter/nvim-treesitter
-    ensure_installed = {
-      "rust",
-      "ron",
-      "javascript",
-      "just",
-      "typescript",
-      "c",
-      "cmake",
-      "python",
-      "toml",
-      "yuck",
-      "yaml",
-      "css",
-      "scss",
-      "zathurarc",
-      "latex",
-      "vimdoc",
-      "vim",
-      "lua",
-      "luadoc",
-      "markdown_inline",
-      "markdown",
-      "bash",
-      "html",
-      "help",
-      "groovy",
-    },
+    ensure_installed = require("conf").ts_installed,
     auto_install = true,
     autopairs = {
       enable = true,
@@ -41,9 +17,8 @@ return {
       enable = true,
       disable = { "yaml" },
     },
-    context_commentstring = {
-      enable = true,
-      enable_autocmd = false,
-    },
   },
+  config = function(_, conf)
+    require("nvim-treesitter.configs").setup(conf)
+  end,
 }

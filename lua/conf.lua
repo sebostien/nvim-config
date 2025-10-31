@@ -1,60 +1,53 @@
 local IS_PERSONAL = true
 
----@class Setup
+---@class sebostien.Config
 ---@field is_personal boolean
----@field mason_install string[]
+---@field common_dirs string[]
+---@field ts_installed string[]
+
+---@type sebostien.Config
+local M = {
+  is_personal = IS_PERSONAL,
+  common_dirs = {
+    vim.fn.expand("~/dev/"),
+    vim.fn.expand("~/Downloads/"),
+    vim.fn.expand("~/Desktop/"),
+  },
+  ts_installed = {
+    "bash",
+    "c",
+    "css",
+    "fish",
+    "groovy",
+    "html",
+    "json",
+    "lua",
+    "luadoc",
+    "make",
+    "markdown",
+    "markdown_inline",
+    "python",
+    "regex",
+    "rust",
+    "scss",
+    "toml",
+    "vim",
+    "vimdoc",
+    "yaml",
+  },
+}
 
 if IS_PERSONAL then
-  ---@type Setup
-  local M = {
-    is_personal = true,
-    mason_install = {
-      "isort",
-      "black",
-      "ast-grep",
-      "bash-language-server",
-      "beautysh",
-      "clangd",
-      "codelldb",
-      "cspell",
-      "css-lsp",
-      "editorconfig-checker",
-      "eslint-lsp",
-      "harper-ls",
-      "hlint",
-      "json-lsp",
-      "ltex-ls",
-      "lua-language-server",
-      "marksman",
-      "misspell",
-      "ormolu",
-      "pyright",
-      "ruff",
-      "shellcheck",
-      "shfmt",
-      "sqlls",
-      "stylua",
-      "taplo",
-      "texlab",
-      "typescript-language-server",
-      "typst-lsp",
-      "yaml-language-server",
-    },
-  }
-
-  return M
-else
-  ---@type Setup
-  local M = {
-    is_personal = false,
-    mason_install = {
-      "jsonls",
-      "marksman",
-      "ruff",
-      "lua-language-server",
-      "shellcheck",
-    },
-  }
-
-  return M
+  M.ts_installed = vim.tbl_extend("keep", M.ts_installed, {
+    "cmake",
+    "javascript",
+    "just",
+    "latex",
+    "ron",
+    "typescript",
+    "yuck",
+    "zathurarc",
+  })
 end
+
+return M

@@ -1,23 +1,21 @@
-if not require("conf").is_personal then
-  return {}
-end
-
 return {
   {
     "mrcjkb/rustaceanvim",
-    version = "^4",
-    ft = { "rust" },
-    dependencies = {
-      "neovim/nvim-lspconfig",
-      "mfussenegger/nvim-dap",
-    },
+    version = "^6",
+    enabled = require("conf").is_personal,
+    lazy = false,
+    dependencies = {},
     config = function()
       vim.g.rustaceanvim = {
         inlay_hints = {
           highlight = "NonText",
         },
         -- Plugin configuration
-        tools = {},
+        tools = {
+          float_win_config = {
+            border = "rounded",
+          },
+        },
         -- LSP configuration
         server = {
           on_attach = function(_, bufnr)
@@ -33,6 +31,15 @@ return {
             map("<leader>cd", function()
               vim.cmd.RustLsp("debug")
             end, "Debug")
+
+            vim.keymap.set(
+              "n",
+              "K", -- Override Neovim's built-in hover keymap with rustaceanvim's hover actions
+              function()
+                vim.cmd.RustLsp({ "hover", "actions" })
+              end,
+              { silent = true, buffer = bufnr }
+            )
           end,
           settings = {
             -- rust-analyzer language server configuration
@@ -44,11 +51,18 @@ return {
   },
   {
     "saecki/crates.nvim",
-    tag = "stable",
+    version = "v0.7.1",
     event = { "BufRead Cargo.toml" },
-    config = function()
-      require("crates").setup()
-      require("cmp").setup.filetype("toml", { { name = "crates" } })
-    end,
+    opts = {
+      lsp = {
+        enabled = true,
+        actions = true,
+        completion = true,
+        hover = true,
+      },
+      popup = {
+        border = "rounded",
+      },
+    },
   },
 }
