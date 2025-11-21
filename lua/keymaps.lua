@@ -35,6 +35,7 @@ keymap(
 
 -- Open file under "cursor"
 keymap("n", "gx", util.smart_open, { desc = "Open file under cursor" })
+keymap("v", "gx", util.smart_open, { desc = "Open file under cursor" })
 
 -- Stay in visual mode when indenting
 keymap("v", "<", "<gv")

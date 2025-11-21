@@ -38,6 +38,20 @@ M.get_current_file = function(callback)
     return nil, nil
   end
 
+  -- Check visual
+  if vim.fn.mode() == "v" then
+    -- Exit visual to set '<
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<ESC>", true, true, true), "x", true)
+
+    local s_start = vim.fn.getpos("'<")
+    local s_end = vim.fn.getpos("'>")
+    local file_path = vim.fn.getregion(s_start, s_end)[1]
+
+    if file_path and callback(file_path) then
+      return file_path, nil
+    end
+  end
+
   local file_path = vim.fn.expand(vim.fn.expand("<cfile>"))
   if file_path and callback(file_path) then
     return file_path, nil
