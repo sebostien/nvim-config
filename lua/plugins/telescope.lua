@@ -21,6 +21,8 @@ return {
       },
     },
     keys = {
+      { "gm", "<CMD>Telescope marks<CR>", desc = "Select marks" },
+
       { "<localleader>ff", "<CMD>Telescope find_files<CR>", desc = "Find files" },
       { "<localleader>fg", "<CMD>Telescope git_files<CR>", desc = "Find tracked files" },
       { "<localleader>ft", "<CMD>Telescope live_grep<CR>", desc = "Live grep" },

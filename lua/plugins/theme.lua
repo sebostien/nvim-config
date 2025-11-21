@@ -35,6 +35,11 @@ local custom_highlights = function(colors)
     String = { fg = colors.green },
     Comment = { fg = colors.fg4 },
     Include = { fg = colors.bluish },
+
+    -- My Extras
+    SnInputTitle = { fg = colors.fg2 },
+    SnSelectTitleCursor = { fg = colors.fg3 },
+    SnSelectTitleEditor = { fg = colors.base, bg = colors.green },
   }
 end
 
@@ -94,7 +99,6 @@ return {
         which_key = true,
         fidget = true,
         hop = true,
-        snacks = { enabled = true }, -- TODO: Maybe remove? Make own vim.ui.select or fix highlights!
         lsp_trouble = false, -- NOTE: Disabled since BG active is wrong
 
         -- TODO: treesitter_context = true ??

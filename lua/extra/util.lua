@@ -169,11 +169,12 @@ M.smart_open = function(filename)
 
   if vim.fn.executable("bits") then
     cmd = function(file)
-      vim.notify("Trying to open " .. file .. " with bits")
+      vim.notify("Opening with bits" .. file)
       return vim.system({ "bits", "open", file }):wait().signal == 0
     end
   elseif vim.fn.executable("xdg-open") then
     cmd = function(file)
+      vim.notify("Opening with xdg-open " .. file)
       return vim.system({ "xdg-open", file }):wait().signal == 0
     end
   else
@@ -186,6 +187,68 @@ M.smart_open = function(filename)
   elseif M.get_current_file(cmd) == nil then
     vim.notify("Could not find file", vim.log.levels.WARN)
   end
+end
+
+---@param win_id integer
+M.close_window = function(win_id)
+  if vim.api.nvim_win_is_valid(win_id) then
+    vim.api.nvim_win_close(win_id, true)
+  end
+  vim.cmd("stopinsert")
+end
+
+---@class sn.CreatedFloat
+---@field win_id integer
+---@field bufnr integer
+
+---@return sn.CreatedFloat|nil
+M.open_float_win = function(config, lines, lock)
+  local bufnr = vim.api.nvim_create_buf(false, true)
+  local win_id = vim.api.nvim_open_win(bufnr, true, config)
+
+  if win_id == 0 then
+    vim.notify("extra :: Failed to create window, win_id returned 0", vim.log.levels.ERROR)
+    M.close_window(win_id)
+    return nil
+  end
+
+  -- nvim_buf_set_lines creates an empty line at the end, due to
+  -- that use nvim_buf_set_text to write the last line item
+  if #lines == 1 then
+    vim.api.nvim_buf_set_text(bufnr, 0, 0, 0, 0, lines)
+  else
+    local copy = vim.deepcopy(lines)
+    local last = table.remove(copy)
+    vim.api.nvim_buf_set_lines(bufnr, 0, 0, false, copy)
+    vim.api.nvim_buf_set_text(bufnr, #copy, 0, #copy, 0, { last })
+  end
+  if lock then
+    vim.api.nvim_set_option_value("modifiable", false, { buf = bufnr })
+    vim.api.nvim_set_option_value("buftype", "prompt", { buf = bufnr })
+  end
+  vim.api.nvim_set_option_value("filetype", "prompt", { buf = bufnr })
+  vim.wo[win_id].wrap = false
+  return { bufnr = bufnr, win_id = win_id }
+end
+
+---Map `f` to each element in `t`. Returning a new table
+---@generic K, T, O
+---@param t { [K]: T }
+---@param fn fun(e: T): O
+---@return { [K]: O }
+M.map = function(t, fn)
+  local new = {}
+  for key, value in pairs(t) do
+    new[key] = fn(value)
+  end
+  return new
+end
+
+---Trim leading and trailing space
+---@param s string
+---@return string
+M.trim_space = function(s)
+  return s:match("^%s*(.-)%s*$")
 end
 
 return M

@@ -37,6 +37,9 @@ keymap(
 keymap("n", "gx", util.smart_open, { desc = "Open file under cursor" })
 keymap("v", "gx", util.smart_open, { desc = "Open file under cursor" })
 
+-- Select buffer
+keymap("n", "gB", require("extra.select").select_buffers, { desc = "Select buffer" })
+
 -- Stay in visual mode when indenting
 keymap("v", "<", "<gv")
 keymap("v", ">", ">gv")
@@ -45,13 +48,11 @@ keymap("v", ">", ">gv")
 keymap("n", "<localleader>i", util.preview_image, { desc = "Preview image under cursor or buffer" })
 
 -- Render markdown
-keymap("n", "<localleader>mr", function()
-  require("extra.render_markdown")()
-end, { desc = "Render markdown of file" })
+keymap("n", "<localleader>m", require("extra.render_markdown"), { desc = "Render markdown of file" })
 
 -- Telescope
-keymap("n", "<localleader>fp", tele_util.common_dirs, { desc = "Telescope: Files in common dirs" })
-keymap("n", "<localleader>fj", tele_util.jq, { desc = "Telescope: jq" })
+keymap("n", "<localleader>fp", tele_util.common_dirs, { desc = "Files in common dirs" })
+keymap("n", "<localleader>fj", tele_util.jq, { desc = "jq" })
 
 -------------------------
 --- Yank/Put ------------

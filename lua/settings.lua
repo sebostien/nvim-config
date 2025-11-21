@@ -1,5 +1,8 @@
 local o = vim.o
 
+-- Debug my stuff
+vim.g.sn_debug = false
+
 o.background = "dark"
 o.showmode = false
 o.wrap = false
@@ -43,6 +46,10 @@ o.tabstop = 8
 o.list = true
 o.listchars = "tab:» ,trail:·,nbsp:␣"
 
+-- UI
+vim.ui.input = require("extra.input").input
+vim.ui.select = require("extra.select").select
+
 -- Remove mouse pop-up text
 vim.cmd([[ aunmenu PopUp.How-to\ disable\ mouse ]])
 vim.cmd([[ aunmenu PopUp.-1- ]])
@@ -64,3 +71,71 @@ vim.api.nvim_create_autocmd("TextYankPost", {
     vim.highlight.on_yank({ timeout = 200 })
   end,
 })
+
+----------------------------------
+--- Disable stuff on big files ---
+----------------------------------
+
+-- Lifted from https://github.com/folke/snacks.nvim
+
+vim.filetype.add({
+  pattern = {
+    [".*"] = {
+      function(path, buf)
+        if not path or not buf or vim.bo[buf].filetype == "bigfile" then
+          return
+        end
+        if path ~= vim.fs.normalize(vim.api.nvim_buf_get_name(buf)) then
+          return
+        end
+        local size = vim.fn.getfsize(path)
+        if size <= 0 then
+          return
+        end
+        -- 2MB
+        if size > 2 * 1024 * 1024 then
+          return "bigfile"
+        end
+        local lines = vim.api.nvim_buf_line_count(buf)
+        -- average line length > 1000
+        return (size - lines) / lines > 1000 and "bigfile" or nil
+      end,
+    },
+  },
+})
+
+vim.api.nvim_create_autocmd({ "FileType" }, {
+  group = vim.api.nvim_create_augroup("sn_bigfile", { clear = true }),
+  pattern = "bigfile",
+  callback = function(ev)
+    local path = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(ev.buf), ":p:~:.")
+    vim.notify(("Big file detected `%s`."):format(path), vim.log.levels.INFO, { annote = "Big File" })
+    vim.api.nvim_buf_call(ev.buf, function()
+      local ctx = {
+        buf = ev.buf,
+        ft = vim.filetype.match({ buf = ev.buf }) or "",
+      }
+
+      if vim.fn.exists(":NoMatchParen") ~= 0 then
+        vim.cmd([[NoMatchParen]])
+      end
+
+      vim.api.nvim_set_option_value("foldmethod", "manual", { scope = "local", win = 0 })
+      vim.api.nvim_set_option_value("statuscolumn", "", { scope = "local", win = 0 })
+      vim.api.nvim_set_option_value("conceallevel", 0, { scope = "local", win = 0 })
+
+      vim.b.completion = false
+      vim.b.minianimate_disable = true
+      vim.b.minihipatterns_disable = true
+      vim.schedule(function()
+        if vim.api.nvim_buf_is_valid(ctx.buf) then
+          vim.bo[ctx.buf].syntax = ctx.ft
+        end
+      end)
+    end)
+  end,
+})
+
+----------------------------------
+----------------------------------
+----------------------------------

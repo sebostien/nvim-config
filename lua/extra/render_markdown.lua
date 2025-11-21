@@ -1,6 +1,6 @@
 local utils = require("extra.util")
 
--- TODO: Watch file if opened. Need to make autorefresh.
+-- TODO: This should be a shell script!
 
 ---@type table<string, string>
 local filetype_to_pandoc = {
