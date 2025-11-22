@@ -51,6 +51,7 @@ local get_select_float_config = function(title, lines, kind)
     height = height,
     style = "minimal",
     zindex = 998,
+    border = "rounded",
   }
 end
 

@@ -29,6 +29,7 @@ M.input = function(opts, on_confirm)
       row = 1,
       col = 0,
       zindex = 999,
+      border = "rounded",
     },
   }
 
