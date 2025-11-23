@@ -44,7 +44,6 @@ return {
       lsp_format = "fallback",
     },
     formatters_by_ft = {
-      lua = { "stylua" },
       rust = { "rustfmt" },
       toml = { "taplo" },
       haskell = { "ormolu" },

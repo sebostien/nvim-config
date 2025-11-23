@@ -34,7 +34,6 @@ local custom_highlights = function(colors)
     -- Syntax
     String = { fg = colors.green },
     Comment = { fg = colors.fg4 },
-    Include = { fg = colors.bluish },
 
     -- My Extras
     SnInputTitle = { fg = colors.fg2 },

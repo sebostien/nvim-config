@@ -35,6 +35,7 @@ local M = {
     "vimdoc",
     "yaml",
   },
+  enabled_lsp_clients = { "ruff", "texlab", "svelte", "lua_ls", "any_ls", "stylua" },
 }
 
 if IS_PERSONAL then

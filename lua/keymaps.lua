@@ -79,11 +79,29 @@ keymap("n", "Q", "<nop>")
 -------------------------
 --- LSP -----------------
 
+vim.api.nvim_create_user_command("LspInfo", function()
+  vim.cmd({ cmd = "checkhealth", args = { "vim.lsp" } })
+end, {})
+vim.api.nvim_create_user_command("LspLog", function()
+  vim.cmd({ cmd = "edit", args = { vim.fn.expand("~/.local/state/nvim/lsp.log") } })
+end, {})
 keymap("n", "<localleader>lm", "<CMD>Mason<CR>", { desc = "Mason" })
-keymap("n", "<localleader>lr", "<CMD>LspRestart<CR><CMD>e<CR>", { desc = "Restart lsp servers" })
-keymap("n", "<localleader>ls", "<CMD>LspStop<CR><CMD>lua vim.diagnostic.reset()<CR>", { desc = "Stop lsp servers" })
+keymap("n", "<localleader>lr", function()
+  for _, lsp in ipairs(vim.lsp.get_clients()) do
+    vim.notify(lsp.name)
+    vim.lsp.enable(lsp.name, false)
+  end
+  vim.diagnostic.reset()
+  vim.lsp.enable(require("conf").enabled_lsp_clients, true)
+end, { desc = "Restart lsp servers" })
+keymap("n", "<localleader>ls", function()
+  for _, lsp in ipairs(vim.lsp.get_clients()) do
+    vim.lsp.enable(lsp.name, false)
+  end
+  vim.diagnostic.reset()
+end, { desc = "Stop lsp servers" }) -- TODO: Fix
 keymap("n", "<leader>ls", function()
-  vim.lsp.enable("harper_ls")
+  vim.lsp.enable("harper_ls", true)
 end, { desc = "Start LSP spellcheckers" })
 
 ---@param event { buf: number, data: { client_id: number }}
@@ -101,8 +119,12 @@ M.set_lsp_buffer_keymaps = function(event)
   local tele = require("telescope.builtin")
 
   map("<space>e", vim.diagnostic.open_float, "Open diagnostics float")
-  map("[d", vim.diagnostic.goto_prev, "Go to prev diagnostics")
-  map("]d", vim.diagnostic.goto_next, "Go to next diagnostics") -- TODO: Deprecated
+  map("[d", function()
+    vim.diagnostic.jump({ count = -1, float = true })
+  end, "Go to prev diagnostics")
+  map("]d", function()
+    vim.diagnostic.jump({ count = 1, float = true })
+  end, "Go to next diagnostics")
 
   -- Gotos
   -- See `:help vim.lsp.*`

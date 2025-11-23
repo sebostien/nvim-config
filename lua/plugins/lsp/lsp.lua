@@ -43,7 +43,7 @@ return {
     opts = { ui = { border = "rounded" } },
     config = function(_, opts)
       require("mason").setup(opts)
-      vim.lsp.enable({ "jsonls", "ruff", "texlab", "svelte", "lua_ls" }, true)
+      vim.lsp.enable(require("conf").enabled_lsp_clients, true)
     end,
   },
 }

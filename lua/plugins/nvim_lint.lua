@@ -43,22 +43,8 @@ return {
         ),
       }
 
-      require("lint").linters.just = {
-        name = "Justfile",
-        cmd = "just",
-        stdin = false,
-        ignore_exitcode = true,
-        stream = "both",
-        args = { "-n", "--justfile" },
-        parser = require("lint.parser").from_pattern(
-          "(.*):%s*(.+)%s*——▶%s(.-):(%d+):(%d+)", -- TODO: The newline is not working?
-          { "code", "message", "file", "lnum", "col" }
-        ),
-      }
-
       require("lint").linters_by_ft = {
         json = { "jq" },
-        just = { "just" },
         sh = { "shellcheck" },
         bash = { "shellcheck" },
         haskell = { "hlint" },
