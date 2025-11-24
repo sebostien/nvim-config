@@ -71,7 +71,7 @@ local lualine_y = {
   { "encoding" },
 }
 
-local lualine_z = { "progress", { "location", padding = { left = 0 } } }
+local lualine_z = { "progress", { "location", padding = { left = 0, right = 1 } } }
 
 local oil_extension = {
   sections = {
