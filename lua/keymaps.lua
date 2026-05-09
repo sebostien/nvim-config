@@ -159,6 +159,7 @@ M.set_lsp_buffer_keymaps = function(event)
   map("<leader>rn", vim.lsp.buf.rename, "Rename symbol")
 
   -- Other
+  vim.keymap.set("v", "<leader>ca", vim.lsp.buf.code_action, { buffer = event.buf, desc = "LSP: Code actions" })
   map("<leader>ca", vim.lsp.buf.code_action, "Code actions")
   map("<leader>cl", vim.lsp.codelens.run, "Codelens")
   map("<leader>cL", vim.lsp.codelens.refresh, "Refresh Codelens")

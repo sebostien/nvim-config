@@ -1,5 +1,12 @@
 local BASE_COLORS = require("colors").Colors
 
+
+--  
+--  
+-- 
+-- 
+-- 
+
 local COLORS = {
   bg1 = BASE_COLORS.subsurface0,
   bg2 = BASE_COLORS.subsurface1,
@@ -125,8 +132,8 @@ return {
         disabled_filetypes = {
           statusline = { "trouble" },
         },
-        section_separators = { left = "", right = "" },
-        component_separators = { left = "", right = "" },
+        section_separators = { left = "", right = "" },
+        component_separators = { left = "", right = "" },
         theme = SN_LINE_THEME,
       },
       sections = {

@@ -102,7 +102,7 @@ M.preview_image = function()
 
   if (vim.env.TERM_PROGRAM == "WezTerm" or vim.env.TERM_PROGRAM == "tmux") and vim.fn.executable("wezterm") then
     cmd = function(file_path)
-      return "wezterm cli split-pane --right -- sh -c 'wezterm imgcat " .. file_path .. " ; read'"
+      return "wezterm cli split-pane --right -- sh -c 'wezterm imgcat " .. file_path .. " ; read -N 1'"
     end
   elseif vim.fn.executable("bits") then
     cmd = function(file_path)
